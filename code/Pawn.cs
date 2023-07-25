@@ -13,6 +13,12 @@ public partial class Pawn : AnimatedEntity
     [Net, Predicted]
     public Glove ActiveGlove {get; set;}
 
+    [Net, Predicted]
+    public bool IsInvincible {get; set;}
+
+    protected float SafeZoneLingerRate = 1.0f;
+    [Net, Predicted] public TimeSince TimeSinceSafeZone {get; set;}
+
     [Browsable(false)]
     public Vector3 EyePosition{
         get => Transform.PointToWorld(EyeLocalPosition);
@@ -81,6 +87,22 @@ public partial class Pawn : AnimatedEntity
         ActiveGlove.OnEquip(this);
     }
 
+	public override void OnKilled()
+	{
+        Respawn();
+
+        var spawns = Entity.All.OfType<SpawnPoint>();
+
+        var rndSpawn = spawns.OrderBy(x => Guid.NewGuid()).FirstOrDefault();
+
+        if(rndSpawn != null){
+            var trans = rndSpawn.Transform;
+
+            trans.Position = trans.Position + Vector3.Up * 50.0f;
+            Transform = trans;
+        }
+	}
+	
     public void Respawn(){
         LifeState = LifeState.Alive;
         Health = 100;
@@ -99,6 +121,19 @@ public partial class Pawn : AnimatedEntity
         EnableTouch = true;
         EnableLagCompensation = true;
         Predictable = true;
+    }
+
+    public void InSafeZone(bool inSafeZone, bool justLeft = true){
+        if(inSafeZone){
+            IsInvincible = true;
+            return;
+        }
+
+        IsInvincible = false;
+    }
+
+    // Use this later for lingering safezone
+    private void HandleSafeZone(){   
     }
 
     private void CreateHull(){
@@ -132,6 +167,7 @@ public partial class Pawn : AnimatedEntity
 	/// </summary>
 	public override void Simulate( IClient cl )
 	{
+        HandleSafeZone();
         ApplyRotations();
         Controller?.Simulate(cl);
         Animator?.Simulate();
