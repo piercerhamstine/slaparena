@@ -28,7 +28,9 @@ public partial class BaseGlove : Glove{
             if(h.Entity != null){
                 PlaySound("rust_pistol.shoot");
                 var plyr = h.Entity as Pawn;
-                plyr.KnockBack(forward);
+                if(!plyr.IsInvincible){
+                    plyr.KnockBack(forward);
+                }
             }
         }
     }
