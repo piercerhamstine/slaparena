@@ -56,7 +56,7 @@ public partial class Pawn : AnimatedEntity
 	public override void Spawn()
 	{
         base.Spawn();
-		SetModel( "models/citizen/citizen.vmdl" );
+		SetModel("models/citizen/citizen.vmdl");
 
         LifeState = LifeState.Alive;
         Health = 100;
@@ -89,18 +89,23 @@ public partial class Pawn : AnimatedEntity
 
 	public override void OnKilled()
 	{
-        Respawn();
+        if(Game.IsClient) return;
 
-        var spawns = Entity.All.OfType<SpawnPoint>();
+        LifeState = LifeState.Dead;
 
-        var rndSpawn = spawns.OrderBy(x => Guid.NewGuid()).FirstOrDefault();
+        if(Game.IsServer){
+            Respawn();
 
-        if(rndSpawn != null){
-            var trans = rndSpawn.Transform;
+            var spawns = Entity.All.OfType<SpawnPoint>();
+            var rndSpawn = spawns.OrderBy(x => Guid.NewGuid()).FirstOrDefault();
+            if(rndSpawn != null){
+                var trans = rndSpawn.Transform;
 
-            trans.Position = trans.Position + Vector3.Up * 50.0f;
-            Transform = trans;
+                trans.Position = trans.Position + Vector3.Up * 50.0f;
+                Transform = trans;
+            }
         }
+
 	}
 	
     public void Respawn(){
