@@ -1,7 +1,7 @@
 @using Sandbox;
 @using Sandbox.UI;
-@inherits Panel;
 
+@inherits Panel
 @attribute [StyleSheet]
 
 <root>
@@ -10,9 +10,13 @@
     </section>
 
     <section class="userselection">
-        <a class="button" href="/create">Create a Game</a>
-        <a class="button">Find a Game</a>
-        <a class="button">Info</a>
+        <button onclick="@Game.Menu.HideMenu">Resume</button>
         <button onclick="@Game.Menu.Close">Quit</button>
     </section>
 </root>
+
+@code{
+    public EscapeMenu(){
+        BindClass("hidden", () => Game.Menu.IsLoading);
+    }
+}
