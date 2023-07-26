@@ -31,7 +31,7 @@
       {
         "Name": "My New Config",
         "GameIdent": "wombatworks.slap_arena#local",
-        "MapName": "dev_arena.vmap",
+        "MapName": "wombatworks.dev_arena",
         "MaxPlayers": 10,
         "GameSettings": {},
         "Addons": "",
