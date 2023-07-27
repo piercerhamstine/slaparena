@@ -1,0 +1,33 @@
+@using Sandbox;
+@using Sandbox.UI;
+
+@inherits InWorldPanel;
+@namespace SlapArena.UI
+
+@attribute [StyleSheet]
+
+@if(Entity is not Pawn plyr || !plyr.IsValid()){
+    return;
+}
+
+<root>
+    <span class="name"><label>@plyr.SteamNickname</label></span>
+</root>
+
+@code{
+    public Nameplate(Pawn plyr, Vector3 offset) : base(plyr, offset){
+
+    }
+    
+    public override void Tick(){
+        if(!Entity.IsValid() || Entity.LifeState == LifeState.Dead){
+            Delete(true);
+            return;
+        }
+
+        var plyr = Entity as Pawn;
+
+        Rotation = Rotation.LookAt(-plyr.AimRay.Forward);
+        Position = Entity.Position + panelOffset;
+    }
+}

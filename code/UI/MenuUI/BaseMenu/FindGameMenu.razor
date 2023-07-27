@@ -1,0 +1,20 @@
+@using Sandbox;
+@using Sandbox.UI;
+@inherits Panel;
+
+@attribute [StyleSheet]
+
+<root>
+    <section>
+        <ServerListPanel @ref="ServerList" ShowGame=@false FilterByGame=@Game.Menu.Package.FullIdent></ServerListPanel>
+    </section>
+
+    <section class="buttons">
+        <button class="menu-button" onclick="@(() => ServerList.Refresh())"> Refresh </button>
+        <a class="menu-button" href="/">Back</a>
+    </section>
+</root>
+
+@code{
+    ServerListPanel ServerList;
+}
