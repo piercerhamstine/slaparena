@@ -1,0 +1,18 @@
+Nameplate{
+    label{
+        font-size: 62px;
+        font-weight: bolder;
+        color: white;
+    }
+
+
+    .name{
+        justify-content: center;
+        align-items: center;
+        border-radius: 50px;
+        background-color: black;
+        opacity: .5;
+        max-height: 100px;
+        padding: 20px;
+    }
+}

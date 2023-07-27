@@ -4,5 +4,33 @@
 @attribute [StyleSheet]
 
 <root>
-    <div>ServerName</div>
+    <div class="container">
+        <div class="header">Create a Server</div>
+
+        <section class="setting">
+            <label class="setting title">Server Name:</label>
+            <TextEntry Value:bind="@serverTitle" Tooltip="Server Title"> </TextEntry>
+        </section>
+
+        <section class="setting">
+            <label class="setting title">Max Players:</label>
+            <SliderControl class="slider" ShowTextEntry="@false" showRange="@true" Min=@(1) Max=@(64) Value:bind="@maxPlayers"></SliderControl>
+        </section>
+
+        <section class="userselection">
+            <button onclick="@StartGame">Start Server</button>
+            <a class="button" href="/">Return</a>
+        </section>
+    </div>
 </root>
+
+@code{
+    private string serverTitle {get; set;} = "Slap Arena Server";
+    private int maxPlayers {get; set;} = 10;
+    private string map = "wombatworks.dev_arena";
+
+    private void StartGame(){
+        _ = Game.Menu.StartServerAsync(maxPlayers, serverTitle, map);
+        this.Navigate("/escapemenu");
+    }
+}

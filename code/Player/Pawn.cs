@@ -7,6 +7,9 @@ namespace SlapArena;
 
 public partial class Pawn : AnimatedEntity
 {
+    [Net]
+    public string SteamNickname {get; private set;}
+
 	[ClientInput] public Vector3 InputDirection { get; protected set; }
 	[ClientInput] public Angles ViewAngles { get; set; }
 
@@ -49,6 +52,7 @@ public partial class Pawn : AnimatedEntity
 
     [BindComponent] public PawnController Controller {get;}
     [BindComponent] public PawnAnimator Animator{get;}
+    [BindComponent] public PawnStuckController StuckController {get;}
 
 	/// <summary>
 	/// Called when the entity is first created 
@@ -77,10 +81,18 @@ public partial class Pawn : AnimatedEntity
 	}
 
     public void DressFromClient(IClient cl){
+        SteamNickname = cl.Name;
         var clothes = new ClothingContainer();
         clothes.LoadFromClient(cl);
         clothes.DressEntity(this);
     }
+
+	public override void ClientSpawn()
+	{
+        _ = new UI.Nameplate(this, new Vector3(0,0,65));
+	}
+
+	
 
     public void SetActiveWeapon(Glove glove){
         ActiveGlove = glove;
@@ -107,20 +119,21 @@ public partial class Pawn : AnimatedEntity
         }
 
 	}
-	
+
     public void Respawn(){
         LifeState = LifeState.Alive;
         Health = 100;
 
         Components.Create<PawnController>();
         Components.Create<PawnAnimator>();
+        Components.Create<PawnStuckController>();
 
         SetActiveWeapon(new BaseGlove());
 
         CreateHull();
         Tags.Add("player");
 
-        EnableAllCollisions = true;
+        //EnableAllCollisions = true;
         EnableDrawing = true;
         EnableHitboxes = true;
         EnableTouch = true;
@@ -135,10 +148,6 @@ public partial class Pawn : AnimatedEntity
         }
 
         IsInvincible = false;
-    }
-
-    // Use this later for lingering safezone
-    private void HandleSafeZone(){   
     }
 
     private void CreateHull(){
@@ -172,8 +181,8 @@ public partial class Pawn : AnimatedEntity
 	/// </summary>
 	public override void Simulate( IClient cl )
 	{
-        HandleSafeZone();
         ApplyRotations();
+        StuckController?.Simulate(cl);
         Controller?.Simulate(cl);
         Animator?.Simulate();
         ActiveGlove?.Simulate(cl);
