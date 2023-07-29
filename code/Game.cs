@@ -21,6 +21,7 @@ public partial class MyGame : GameManager
 {
 	public MyGame()
 	{
+            
 	}
 
 	/// <summary>

@@ -48,6 +48,7 @@ public partial class Glove : ModelEntity
             {
                 TimeSincePrimaryAttack = 0;
                 PrimaryAttack();
+    
             }
         }
 	}

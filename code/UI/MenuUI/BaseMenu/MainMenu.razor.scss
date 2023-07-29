@@ -5,6 +5,20 @@ MainMenu{
     font-family:  'Lucida Grande', 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     flex-direction: column;
 
+    .updatebar{
+        width: 100%;
+        height: 10%;
+        background-color: #3e67bd;
+        position: absolute;
+        z-index: 1;
+
+        justify-content: center;
+        align-items: center;
+
+        font-weight: 900;
+        font-size: 50px;
+    }
+
     .header{
         background-color: #578bfa;
         justify-content: center;
