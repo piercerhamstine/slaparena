@@ -19,13 +19,12 @@ public partial class Pawn : AnimatedEntity
     [Net, Predicted]
     public bool IsInvincible {get; set;}
 
-    protected float SafeZoneLingerRate = 1.0f;
     [Net, Predicted] public TimeSince TimeSinceSafeZone {get; set;}
 
     [Browsable(false)]
     public Vector3 EyePosition{
-        get => Transform.PointToWorld(EyeLocalPosition);
-        set => EyeLocalPosition = Transform.PointToLocal(value);
+        get => EyeLocalPosition;
+        set => EyeLocalPosition = value;
     }
 
     [Net, Predicted, Browsable(false)]
@@ -54,6 +53,18 @@ public partial class Pawn : AnimatedEntity
     [BindComponent] public PawnAnimator Animator{get;}
     [BindComponent] public PawnStuckController StuckController {get;}
 
+
+    // TESTING
+    public CameraMode CameraMode{
+        get => Components.Get<CameraMode>();
+        set{
+            if(Game.IsServer){
+                Components.RemoveAny<CameraMode>();
+                Components.Add(value);
+            }
+        }
+    }
+
 	/// <summary>
 	/// Called when the entity is first created 
 	/// </summary>
@@ -78,7 +89,18 @@ public partial class Pawn : AnimatedEntity
         EnableTouch = true;
         EnableLagCompensation = true;
         Predictable = true;
+
+        CreateHud();
 	}
+
+    protected Sandbox.UI.Panel crosshair;
+    public void CreateHud(){
+        Log.Info("fard");
+        if(Game.RootPanel == null) return;
+        
+        crosshair = new SlapArena.UI.Crosshair();
+        crosshair.Parent = Game.RootPanel;
+    }
 
     public void DressFromClient(IClient cl){
         SteamNickname = cl.Name;
@@ -89,10 +111,8 @@ public partial class Pawn : AnimatedEntity
 
 	public override void ClientSpawn()
 	{
-        _ = new UI.Nameplate(this, new Vector3(0,0,65));
+        _ = new UI.Nameplate(this, new Vector3(-8,0,65));
 	}
-
-	
 
     public void SetActiveWeapon(Glove glove){
         ActiveGlove = glove;
@@ -127,6 +147,7 @@ public partial class Pawn : AnimatedEntity
         Components.Create<PawnController>();
         Components.Create<PawnAnimator>();
         Components.Create<PawnStuckController>();
+        Components.Create<CameraThirdPerson>();
 
         SetActiveWeapon(new BaseGlove());
 
@@ -181,12 +202,16 @@ public partial class Pawn : AnimatedEntity
 	/// </summary>
 	public override void Simulate( IClient cl )
 	{
-        ApplyRotations();
+        //ApplyRotations();
         StuckController?.Simulate(cl);
         Controller?.Simulate(cl);
         Animator?.Simulate();
         ActiveGlove?.Simulate(cl);
-        EyeLocalPosition = Vector3.Up * (64 * Scale);
+
+        // TESTING
+        if(CameraMode is ThirdPersonCamera){
+            EyeRotation = ThirdPersonCamera.GetEyeRotation(this);
+        }
 	}
 
 	/// <summary>
@@ -194,28 +219,6 @@ public partial class Pawn : AnimatedEntity
 	/// </summary>
 	public override void FrameSimulate( IClient cl )
 	{
-        ApplyRotations();
-
-		Camera.Rotation = ViewAngles.ToRotation();;
-		// Set field of view to whatever the user chose in options
-        Camera.FieldOfView = Screen.CreateVerticalFieldOfView( Game.Preferences.FieldOfView );
-		Camera.Position = Position;
-
-        Vector3 targetPos;
-        var pos = Position + Vector3.Up * 64;
-        var rot = Camera.Rotation * Rotation.FromAxis(Vector3.Up, -24);
-
-        float dist = 120.0f * Scale;
-        targetPos = pos + rot.Right * ((CollisionBounds.Mins.x + 50) * Scale);
-        targetPos += rot.Forward * -dist;
-        
-        var trace = Trace.Ray(pos, targetPos).WithAnyTags("solid")
-                    .Ignore(this)
-                    .Radius(8)
-                    .Run();
-
-        Camera.FirstPersonViewer = null;
-        Camera.Position = trace.EndPosition;
 	}
 
     public TraceResult TraceBBox(Vector3 start, Vector3 end, float liftFeet = 0.0f){

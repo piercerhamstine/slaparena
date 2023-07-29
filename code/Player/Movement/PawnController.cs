@@ -30,7 +30,7 @@ public class PawnController : EntityComponent<Pawn>
                 AddEvent("grounded");
             }
 
-            Entity.Velocity = Accelerate(Entity.Velocity, moveVec.Normal, moveVec.Length, 200.0f * (Input.Down("run") ? 2.5f : 1f), 7.5f);            
+            Entity.Velocity = Accelerate(Entity.Velocity, moveVec.Normal, moveVec.Length, 200.0f, 7.5f);            
             Entity.Velocity = ApplyFriction(Entity.Velocity, 4.0f);
         }
         else{

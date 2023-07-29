@@ -14,7 +14,6 @@ public partial class BaseGlove : Glove{
 
     public override void PrimaryAttack(){
         AttackEffect();
-        //Pawn.PlaySound("rust_pistol.shoot");
         Attack();
     }
 
@@ -23,7 +22,16 @@ public partial class BaseGlove : Glove{
         var forward = ray.Forward;
         forward = forward.Normal;
 
-        var hits = Melee(ray.Position, ray.Position + forward * 50f);
+        var ply = Owner as Pawn;
+        var diff = ply.Position + Vector3.Up * 64;
+        var sub = ply.EyePosition - diff;
+        var newAng = Vector3.VectorAngle(sub);
+        var newRot = newAng.ToRotation();
+        var f = newRot.Forward.Normal;
+        DebugOverlay.Line(ply.EyePosition, ray.Position+f * -999f, Color.Red, 3, true);
+        var hits = Melee(ray.Position, ray.Position+forward * 100f, 10f);
+        
+        Log.Info("fatd");
         foreach(var h in hits){
             if(h.Entity != null){
                 PlaySound("rust_pistol.shoot");
