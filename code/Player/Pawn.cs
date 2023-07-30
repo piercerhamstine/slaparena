@@ -10,6 +10,8 @@ public partial class Pawn : AnimatedEntity
     [Net]
     public string SteamNickname {get; private set;}
 
+    private DamageInfo lastDamage;
+
 	[ClientInput] public Vector3 InputDirection { get; protected set; }
 	[ClientInput] public Angles ViewAngles { get; set; }
 
@@ -98,9 +100,16 @@ public partial class Pawn : AnimatedEntity
 
 	public override void OnKilled()
 	{
-        if(Game.IsClient) return;
+        if(Game.IsClient){return;}
 
         LifeState = LifeState.Dead;
+        Log.Info(lastDamage);
+        if(lastDamage.Attacker == null){
+            MyGame.Current.OnKilledMessage(this.Client.SteamId, this.Client.Name, 0, "", "Commited Suicide");
+        }
+        else{
+            MyGame.Current.OnKilledMessage(lastDamage.Attacker.Client.SteamId, lastDamage.Attacker.Client.Name, this.Client.SteamId, this.Client.Name, "Spanked");
+        }
 
         if(Game.IsServer){
             Respawn();
@@ -114,7 +123,6 @@ public partial class Pawn : AnimatedEntity
                 Transform = trans;
             }
         }
-
 	}
 
     public void Respawn(){
@@ -131,7 +139,7 @@ public partial class Pawn : AnimatedEntity
         CreateHull();
         Tags.Add("player");
 
-        //EnableAllCollisions = true;
+        EnableAllCollisions = true;
         EnableDrawing = true;
         EnableHitboxes = true;
         EnableTouch = true;
@@ -179,6 +187,8 @@ public partial class Pawn : AnimatedEntity
 	/// </summary>
 	public override void Simulate( IClient cl )
 	{
+        if(LifeState != LifeState.Alive){return;}
+
         ApplyRotations();
         StuckController?.Simulate(cl);
         Controller?.Simulate(cl);

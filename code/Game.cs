@@ -54,4 +54,10 @@ public partial class MyGame : GameManager
 			pawn.Transform = tx;
 		}
 	}
+
+    [ClientRpc]
+	public override void OnKilledMessage( long leftid, string left, long rightid, string right, string method )
+	{
+        Killfeed.current?.AddEntry(leftid, left, rightid, right, method);
+	}
 }
