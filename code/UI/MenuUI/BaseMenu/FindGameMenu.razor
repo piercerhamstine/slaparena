@@ -5,13 +5,17 @@
 @attribute [StyleSheet]
 
 <root>
+    <div class="header">
+        Slap Arena Servers
+    </div>
+
     <section>
         <ServerListPanel @ref="ServerList" ShowGame=@false FilterByGame=@Game.Menu.Package.FullIdent></ServerListPanel>
     </section>
 
     <section class="buttons">
-        <button class="menu-button" onclick="@(() => ServerList.Refresh())"> Refresh </button>
-        <a class="menu-button" href="/">Back</a>
+        <button class="button" onclick="@(() => ServerList.Refresh())"> Refresh </button>
+        <a class="button" href="/">Back</a>
     </section>
 </root>
 
