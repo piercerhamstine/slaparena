@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using SlapArena.UI;
 
 //
 // You don't need to put things in a namespace, but it doesn't hurt.
@@ -21,7 +22,9 @@ public partial class MyGame : GameManager
 {
 	public MyGame()
 	{
-            
+        if(Game.IsServer){
+            _ = new Hud();
+        }
 	}
 
 	/// <summary>

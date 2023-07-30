@@ -77,18 +77,7 @@ public partial class Pawn : AnimatedEntity
         EnableTouch = true;
         EnableLagCompensation = true;
         Predictable = true;
-
-        CreateHud();
 	}
-
-    protected Sandbox.UI.Panel crosshair;
-    public void CreateHud(){
-        Log.Info("fard");
-        if(Game.RootPanel == null) return;
-        
-        crosshair = new SlapArena.UI.Crosshair();
-        crosshair.Parent = Game.RootPanel;
-    }
 
     public void DressFromClient(IClient cl){
         SteamNickname = cl.Name;
