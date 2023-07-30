@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using Sandbox.UI;
 using Sandbox.UI.Construct;
 using System;
 using System.IO;
@@ -54,6 +55,24 @@ public partial class MyGame : GameManager
 			pawn.Transform = tx;
 		}
 	}
+
+	public override void Simulate( IClient cl )
+	{
+        var plyr = cl.Pawn as Pawn;
+        if(plyr.IsValid() && Input.Down("voice")){
+            VoiceList.Current?.OnVoicePlayed(cl.SteamId, 0.5f);
+        }
+
+        base.Simulate(cl);
+	}
+
+	
+
+    public override void OnVoicePlayed(IClient cl){
+        cl.Voice.WantsStereo = false;
+
+        base.OnVoicePlayed(cl);
+    }
 
     [ClientRpc]
 	public override void OnKilledMessage( long leftid, string left, long rightid, string right, string method )

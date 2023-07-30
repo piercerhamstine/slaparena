@@ -15,5 +15,10 @@ public partial class Hud : HudEntity<RootPanel>
         RootPanel.AddChild<Chat>();
         RootPanel.AddChild<Killfeed>();
         RootPanel.AddChild<Crosshair>();
+
+        // Implement custom later.
+        RootPanel.AddChild<VoiceList>();
+        RootPanel.AddChild<VoiceSpeaker>();
+        RootPanel.AddChild<Scoreboard<ScoreboardEntry>>();
     }
 }
