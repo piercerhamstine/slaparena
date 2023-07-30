@@ -52,19 +52,8 @@ public partial class Pawn : AnimatedEntity
     [BindComponent] public PawnController Controller {get;}
     [BindComponent] public PawnAnimator Animator{get;}
     [BindComponent] public PawnStuckController StuckController {get;}
-
-
-    // TESTING
-    public CameraMode CameraMode{
-        get => Components.Get<CameraMode>();
-        set{
-            if(Game.IsServer){
-                Components.RemoveAny<CameraMode>();
-                Components.Add(value);
-            }
-        }
-    }
-
+    [BindComponent] public CameraThirdPerson ThirdPersonCam {get;}
+    
 	/// <summary>
 	/// Called when the entity is first created 
 	/// </summary>
@@ -76,8 +65,7 @@ public partial class Pawn : AnimatedEntity
         LifeState = LifeState.Alive;
         Health = 100;
 
-        Components.Create<PawnController>();
-        Components.Create<PawnAnimator>();
+
 
         SetActiveWeapon(new BaseGlove());
 
@@ -144,12 +132,12 @@ public partial class Pawn : AnimatedEntity
         LifeState = LifeState.Alive;
         Health = 100;
 
+        SetActiveWeapon(new BaseGlove());
+
         Components.Create<PawnController>();
         Components.Create<PawnAnimator>();
         Components.Create<PawnStuckController>();
         Components.Create<CameraThirdPerson>();
-
-        SetActiveWeapon(new BaseGlove());
 
         CreateHull();
         Tags.Add("player");
@@ -202,16 +190,13 @@ public partial class Pawn : AnimatedEntity
 	/// </summary>
 	public override void Simulate( IClient cl )
 	{
-        //ApplyRotations();
+        ApplyRotations();
         StuckController?.Simulate(cl);
         Controller?.Simulate(cl);
         Animator?.Simulate();
         ActiveGlove?.Simulate(cl);
 
-        // TESTING
-        if(CameraMode is ThirdPersonCamera){
-            EyeRotation = ThirdPersonCamera.GetEyeRotation(this);
-        }
+        ThirdPersonCam?.Simulate();
 	}
 
 	/// <summary>
@@ -219,6 +204,7 @@ public partial class Pawn : AnimatedEntity
 	/// </summary>
 	public override void FrameSimulate( IClient cl )
 	{
+        ThirdPersonCam?.Simulate();
 	}
 
     public TraceResult TraceBBox(Vector3 start, Vector3 end, float liftFeet = 0.0f){

@@ -3,7 +3,7 @@ using Sandbox;
 namespace SlapArena;
 
 public partial class CameraThirdPerson : EntityComponent<Pawn>{
-    public void Tick(){
+    public void Simulate(){
         if(Entity is Pawn plyr){
             Camera.FirstPersonViewer = null;
             Camera.FieldOfView = Screen.CreateVerticalFieldOfView( Game.Preferences.FieldOfView );
@@ -11,7 +11,6 @@ public partial class CameraThirdPerson : EntityComponent<Pawn>{
             Camera.Position = GetCameraPosition();
 
             plyr.EyePosition = Camera.Position;
-            plyr.EyeRotation = GetEyeRotation();
         }
     }
 
@@ -35,30 +34,5 @@ public partial class CameraThirdPerson : EntityComponent<Pawn>{
                         .Run();
 
         return trace.EndPosition;
-    }
-
-    public Rotation GetEyeRotation(){
-        if(Entity is not Pawn plyr) return Rotation.Identity;
-
-        var camPos = Game.IsClient ? Camera.Position : GetCameraPosition();
-
-        var rot = plyr.ViewAngles.ToRotation();
-        var camTr = Trace.Ray(camPos + rot.Forward * 20, camPos + rot.Forward * 9999)
-            .WithAnyTags("solid")
-            .Ignore(plyr)
-            .Radius(8)
-            .Run();
-
-        var posDiff = camTr.EndPosition - plyr.EyePosition;
-        var newAng = Vector3.VectorAngle(posDiff);
-        var newRot = newAng.ToRotation();
-
-        // Cam
-        DebugOverlay.Line(camPos, camTr.EndPosition, color: Color.Blue);
-
-        // Eye
-        DebugOverlay.Line(plyr.EyePosition, plyr.EyePosition + newRot.Forward * 9999, color: Color.Red);
-
-        return newRot;
     }
 }
