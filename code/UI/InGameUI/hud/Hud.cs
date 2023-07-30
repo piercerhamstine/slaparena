@@ -10,8 +10,10 @@ public partial class Hud : HudEntity<RootPanel>
             return;
         }
 
-        RootPanel.StyleSheet.Load("/UI/InGameUI/Hud/Hud.scss");
+        RootPanel.StyleSheet.Load("/UI/InGameUI/Hud/Hud.razor.scss");
 
+        RootPanel.AddChild<Chat>();
         RootPanel.AddChild<Crosshair>();
+
     }
 }
