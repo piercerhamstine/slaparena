@@ -11,6 +11,9 @@ public class PawnController : EntityComponent<Pawn>
     public float Gravity => 800f;
     public float JumpSpeed => 400f;
 
+    public int MaxDashes => 200;
+    private int CurrentDashes {get; set;} = 0;
+
     bool Grounded => Entity.GroundEntity.IsValid();
 
     HashSet<string> ControllerEvents = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -42,6 +45,10 @@ public class PawnController : EntityComponent<Pawn>
             HandleJump();
         }
 
+        if(Input.Pressed("run")){
+            HandleDash();
+        }
+
         var moveHelper = new MoveHelper(Entity.Position, Entity.Velocity);
         moveHelper.Trace = moveHelper.Trace.Size(Entity.Hull).Ignore(Entity);
 
@@ -54,6 +61,21 @@ public class PawnController : EntityComponent<Pawn>
         }
 
         Entity.GroundEntity = groundEntity;
+    }
+
+    private void HandleDash(){
+        if(CurrentDashes < MaxDashes){
+            Entity.Velocity = ApplyDash(Entity.Velocity, "noclip");
+            CurrentDashes += 1;
+        }
+    }
+
+    private Vector3 ApplyDash(Vector3 velocity, string eventName){
+        AddEvent(eventName);
+
+        var dir = Entity.InputDirection.Normal;
+        dir = Entity.Transform.NormalToWorld(dir);
+        return Entity.Velocity + dir * 500f;
     }
 
     private void HandleJump(){
