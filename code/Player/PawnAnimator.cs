@@ -16,8 +16,5 @@ public class PawnAnimator : EntityComponent<Pawn>, ISingletonComponent
         if(Entity.Controller.HasEvent("jump")){
             helper.TriggerJump();
         }
-        if(Entity.Controller.HasEvent("dash")){
-            helper.IsNoclipping = true;
-        }
 	}
 }

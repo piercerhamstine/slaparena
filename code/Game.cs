@@ -29,7 +29,7 @@ public partial class MyGame : GameManager
         }
 
         if(Game.IsClient){
-            var p = new InfoDisplay();
+            _ = new InfoDisplay();
         }
 	}
 

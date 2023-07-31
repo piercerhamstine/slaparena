@@ -110,8 +110,11 @@ public partial class Pawn : AnimatedEntity
             MyGame.Current.OnKilledMessage(this.Client.SteamId, this.Client.Name, 0, "", "Commited Suicide");
         }
         else{
+            lastDamage.Attacker.Client.AddInt("kills", 1);
             MyGame.Current.OnKilledMessage(lastDamage.Attacker.Client.SteamId, lastDamage.Attacker.Client.Name, this.Client.SteamId, this.Client.Name, "Spanked");
         }
+
+        Client?.AddInt("deaths", 1);
 
         if(Game.IsServer){
             Respawn();
