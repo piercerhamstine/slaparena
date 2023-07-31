@@ -36,7 +36,14 @@ public partial class BaseGlove : Glove{
                 PlaySound("rust_pistol.shoot");
                 var plyr = h.Entity as Pawn;
                 if(!plyr.IsInvincible){
-                    plyr.KnockBack(forward);
+                    using (Prediction.Off()){
+                        var dmgInfo = new DamageInfo();
+                        dmgInfo.Attacker = Owner;
+                        dmgInfo.WithWeapon(this);
+
+                        plyr.lastDamage = dmgInfo;
+                        plyr.KnockBack(forward);
+                    }
                 }
             }
         }
