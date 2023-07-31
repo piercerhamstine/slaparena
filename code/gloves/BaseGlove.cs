@@ -25,7 +25,7 @@ public partial class BaseGlove : Glove{
         // I am sure there is a much cleaner way of doing this
         // But it works for now.
         var pos = Owner.Position + Vector3.Up * 64f;
-        var camTrace = Trace.Ray(ray.Position, ray.Position + forward*190f)
+        var camTrace = Trace.Ray(ray.Position, ray.Position + forward*195f)
                         .Ignore(Owner)
                         .WithAnyTags("solid")
                         .Run();

@@ -8,8 +8,8 @@ public class PawnController : EntityComponent<Pawn>
 {
     public int GroundAngle => 45;
     public int StepSize => 24;
-
     public float Gravity => 800f;
+    public float JumpSpeed => 400f;
 
     bool Grounded => Entity.GroundEntity.IsValid();
 
@@ -34,8 +34,12 @@ public class PawnController : EntityComponent<Pawn>
             Entity.Velocity = ApplyFriction(Entity.Velocity, 4.0f);
         }
         else{
-            Entity.Velocity = Accelerate(Entity.Velocity, moveVec.Normal, moveVec.Length, 100f, 20f);
+            Entity.Velocity = Accelerate(Entity.Velocity, moveVec.Normal, moveVec.Length, 50f, 7.5f);
             Entity.Velocity += Vector3.Down * Gravity * Time.Delta;
+        }
+
+        if(Input.Pressed("jump")){
+            HandleJump();
         }
 
         var moveHelper = new MoveHelper(Entity.Position, Entity.Velocity);
@@ -50,6 +54,18 @@ public class PawnController : EntityComponent<Pawn>
         }
 
         Entity.GroundEntity = groundEntity;
+    }
+
+    private void HandleJump(){
+        if(Grounded){
+            Entity.Velocity = ApplyJump(Entity.Velocity, "jump");
+        }
+    }
+
+    private Vector3 ApplyJump(Vector3 velocity, string jumpType){
+        AddEvent(jumpType);
+
+        return velocity + Vector3.Up * JumpSpeed;
     }
 
     private Vector3 Accelerate(Vector3 input, Vector3 wantedDir, float wantedSpeed, float maxSpeed, float acceleration){

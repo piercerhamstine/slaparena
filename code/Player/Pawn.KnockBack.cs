@@ -3,7 +3,7 @@ using Sandbox;
 namespace SlapArena;
 
 public partial class Pawn{
-    public void KnockBack(Vector3 direction, float verticalMultiplier = 3f, int knockBackPower = 500){
+    public void KnockBack(Vector3 direction, float verticalMultiplier = 1.5f, int knockBackPower = 600){
         if(Game.IsClient) return;
 
 
