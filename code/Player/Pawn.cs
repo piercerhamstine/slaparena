@@ -10,7 +10,9 @@ public partial class Pawn : AnimatedEntity
     [Net]
     public string SteamNickname {get; private set;}
 
-    private DamageInfo lastDamage;
+    public DamageInfo lastDamage;
+    private TimeSince timeSinceLastDmg;
+    private float timeToClearDmgInfo = 4.0f;
 
 	[ClientInput] public Vector3 InputDirection { get; protected set; }
 	[ClientInput] public Angles ViewAngles { get; set; }
@@ -67,8 +69,6 @@ public partial class Pawn : AnimatedEntity
         LifeState = LifeState.Alive;
         Health = 100;
 
-
-
         SetActiveWeapon(new BaseGlove());
 
         CreateHull();
@@ -102,14 +102,19 @@ public partial class Pawn : AnimatedEntity
 	{
         if(Game.IsClient){return;}
 
+        // Remove velocity;
+        Velocity = Vector3.Zero;
         LifeState = LifeState.Dead;
         Log.Info(lastDamage);
         if(lastDamage.Attacker == null){
             MyGame.Current.OnKilledMessage(this.Client.SteamId, this.Client.Name, 0, "", "Commited Suicide");
         }
         else{
+            lastDamage.Attacker.Client.AddInt("kills", 1);
             MyGame.Current.OnKilledMessage(lastDamage.Attacker.Client.SteamId, lastDamage.Attacker.Client.Name, this.Client.SteamId, this.Client.Name, "Spanked");
         }
+
+        Client?.AddInt("deaths", 1);
 
         if(Game.IsServer){
             Respawn();
@@ -156,6 +161,18 @@ public partial class Pawn : AnimatedEntity
         IsInvincible = false;
     }
 
+    private void UpdateDmgInfo(){
+        if(lastDamage.Attacker == null){
+            timeSinceLastDmg = 0;
+            return;
+        }
+
+        if(timeSinceLastDmg > timeToClearDmgInfo){
+            timeSinceLastDmg = 0;
+            lastDamage = new DamageInfo();
+        }
+    }
+
     private void CreateHull(){
         SetupPhysicsFromAABB(PhysicsMotionType.Keyframed, Hull.Mins, Hull.Maxs);
 
@@ -190,11 +207,13 @@ public partial class Pawn : AnimatedEntity
         if(LifeState != LifeState.Alive){return;}
 
         ApplyRotations();
+        UpdateDmgInfo();
+
+        // Components
         StuckController?.Simulate(cl);
         Controller?.Simulate(cl);
         Animator?.Simulate();
         ActiveGlove?.Simulate(cl);
-
         ThirdPersonCam?.Simulate();
 	}
 

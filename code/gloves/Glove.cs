@@ -12,7 +12,7 @@ public partial class Glove : ModelEntity
     /// <summary>
     /// How often the glove can attack
     /// </summary>
-    public virtual float RateOfFire => 0.5f;
+    public virtual float RateOfFire => 1.5f;
 
     [Net, Predicted] public TimeSince TimeSincePrimaryAttack {get; set;}
     
