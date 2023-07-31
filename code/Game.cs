@@ -2,6 +2,7 @@
 using Sandbox.UI;
 using Sandbox.UI.Construct;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,10 +22,14 @@ namespace SlapArena;
 /// </summary>
 public partial class MyGame : GameManager
 {
-	public MyGame()
+    public MyGame()
 	{
         if(Game.IsServer){
             _ = new Hud();
+        }
+
+        if(Game.IsClient){
+            var p = new InfoDisplay();
         }
 	}
 

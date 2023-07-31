@@ -1,0 +1,37 @@
+@using Sandbox;
+@using Sandbox.UI;
+@inherits WorldPanel
+
+@namespace SlapArena.UI
+
+@attribute [StyleSheet("/UI/InWorldUI/InfoDisplay/InfoDisplay.scss")]
+
+<root>
+    <section class="header">
+        <span>Welcome to Slap Arena</span>
+    </section>
+
+    <section class="about">
+        <div>This is a WORK IN PROGRESS.</div>
+    </section>
+
+    <section class="instructions">
+        <p>The goal is to knock other players off the map.</p>
+        <p>Currently there is only one glove, the basic glove to use.</p>
+        <p>You can dash by pressing the "run" key, most likely shift.</p>
+    </section>
+</root>
+
+@code{
+    public InfoDisplay(){
+        Position = new Vector3(0, 570, 1930);
+        var rot = Rotation.FromAxis(Vector3.Up, 270);
+        Rotation = rot;
+        this.PanelBounds = new Rect(new Vector2(this.PanelBounds.Position.x, this.PanelBounds.Position.y), new Vector2(4000, 4000));
+    }
+
+    public override void Tick(){
+        Position = new Vector3(-80, 570, 2030);
+        this.PanelBounds = new Rect(new Vector2(this.PanelBounds.Position.x, this.PanelBounds.Position.y), new Vector2(4000, 4000));
+    }
+}
