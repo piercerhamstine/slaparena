@@ -1,0 +1,24 @@
+@using Sandbox;
+@using Sandbox.UI;
+
+@inherits Sandbox.UI.Panel;
+@attribute [StyleSheet]
+
+@namespace SlapArena.UI
+
+<root>
+    @if(SteamId > 0){
+        <img src="avatar:@SteamId">
+    }
+
+    <label class="name" text=@Name style="font-color: @Color.Hex;"></label>
+    <label class="msg" text=@Message></label>
+</root>
+
+@code{
+    public string Name {get; set;}
+    public Color Color {get; set;}
+    public string Message {get; set;}
+    public long SteamId {get; set;}
+    public TimeSince Lifetime {get; set;} = 0;
+}

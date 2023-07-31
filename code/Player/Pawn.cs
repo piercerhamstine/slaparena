@@ -10,6 +10,8 @@ public partial class Pawn : AnimatedEntity
     [Net]
     public string SteamNickname {get; private set;}
 
+    private DamageInfo lastDamage;
+
 	[ClientInput] public Vector3 InputDirection { get; protected set; }
 	[ClientInput] public Angles ViewAngles { get; set; }
 
@@ -52,19 +54,8 @@ public partial class Pawn : AnimatedEntity
     [BindComponent] public PawnController Controller {get;}
     [BindComponent] public PawnAnimator Animator{get;}
     [BindComponent] public PawnStuckController StuckController {get;}
-
-
-    // TESTING
-    public CameraMode CameraMode{
-        get => Components.Get<CameraMode>();
-        set{
-            if(Game.IsServer){
-                Components.RemoveAny<CameraMode>();
-                Components.Add(value);
-            }
-        }
-    }
-
+    [BindComponent] public CameraThirdPerson ThirdPersonCam {get;}
+    
 	/// <summary>
 	/// Called when the entity is first created 
 	/// </summary>
@@ -76,8 +67,7 @@ public partial class Pawn : AnimatedEntity
         LifeState = LifeState.Alive;
         Health = 100;
 
-        Components.Create<PawnController>();
-        Components.Create<PawnAnimator>();
+
 
         SetActiveWeapon(new BaseGlove());
 
@@ -89,18 +79,7 @@ public partial class Pawn : AnimatedEntity
         EnableTouch = true;
         EnableLagCompensation = true;
         Predictable = true;
-
-        CreateHud();
 	}
-
-    protected Sandbox.UI.Panel crosshair;
-    public void CreateHud(){
-        Log.Info("fard");
-        if(Game.RootPanel == null) return;
-        
-        crosshair = new SlapArena.UI.Crosshair();
-        crosshair.Parent = Game.RootPanel;
-    }
 
     public void DressFromClient(IClient cl){
         SteamNickname = cl.Name;
@@ -121,9 +100,16 @@ public partial class Pawn : AnimatedEntity
 
 	public override void OnKilled()
 	{
-        if(Game.IsClient) return;
+        if(Game.IsClient){return;}
 
         LifeState = LifeState.Dead;
+        Log.Info(lastDamage);
+        if(lastDamage.Attacker == null){
+            MyGame.Current.OnKilledMessage(this.Client.SteamId, this.Client.Name, 0, "", "Commited Suicide");
+        }
+        else{
+            MyGame.Current.OnKilledMessage(lastDamage.Attacker.Client.SteamId, lastDamage.Attacker.Client.Name, this.Client.SteamId, this.Client.Name, "Spanked");
+        }
 
         if(Game.IsServer){
             Respawn();
@@ -137,24 +123,23 @@ public partial class Pawn : AnimatedEntity
                 Transform = trans;
             }
         }
-
 	}
 
     public void Respawn(){
         LifeState = LifeState.Alive;
         Health = 100;
 
+        SetActiveWeapon(new BaseGlove());
+
         Components.Create<PawnController>();
         Components.Create<PawnAnimator>();
         Components.Create<PawnStuckController>();
         Components.Create<CameraThirdPerson>();
 
-        SetActiveWeapon(new BaseGlove());
-
         CreateHull();
         Tags.Add("player");
 
-        //EnableAllCollisions = true;
+        EnableAllCollisions = true;
         EnableDrawing = true;
         EnableHitboxes = true;
         EnableTouch = true;
@@ -202,16 +187,15 @@ public partial class Pawn : AnimatedEntity
 	/// </summary>
 	public override void Simulate( IClient cl )
 	{
-        //ApplyRotations();
+        if(LifeState != LifeState.Alive){return;}
+
+        ApplyRotations();
         StuckController?.Simulate(cl);
         Controller?.Simulate(cl);
         Animator?.Simulate();
         ActiveGlove?.Simulate(cl);
 
-        // TESTING
-        if(CameraMode is ThirdPersonCamera){
-            EyeRotation = ThirdPersonCamera.GetEyeRotation(this);
-        }
+        ThirdPersonCam?.Simulate();
 	}
 
 	/// <summary>
@@ -219,6 +203,7 @@ public partial class Pawn : AnimatedEntity
 	/// </summary>
 	public override void FrameSimulate( IClient cl )
 	{
+        ThirdPersonCam?.Simulate();
 	}
 
     public TraceResult TraceBBox(Vector3 start, Vector3 end, float liftFeet = 0.0f){

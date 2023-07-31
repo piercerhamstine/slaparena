@@ -1,9 +1,11 @@
 ﻿using Sandbox;
+using Sandbox.UI;
 using Sandbox.UI.Construct;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using SlapArena.UI;
 
 //
 // You don't need to put things in a namespace, but it doesn't hurt.
@@ -21,7 +23,9 @@ public partial class MyGame : GameManager
 {
 	public MyGame()
 	{
-            
+        if(Game.IsServer){
+            _ = new Hud();
+        }
 	}
 
 	/// <summary>
@@ -50,5 +54,29 @@ public partial class MyGame : GameManager
 			tx.Position = tx.Position + Vector3.Up * 50.0f; // raise it up
 			pawn.Transform = tx;
 		}
+	}
+
+	public override void Simulate( IClient cl )
+	{
+        var plyr = cl.Pawn as Pawn;
+        if(plyr.IsValid() && Input.Down("voice")){
+            VoiceList.Current?.OnVoicePlayed(cl.SteamId, 0.5f);
+        }
+
+        base.Simulate(cl);
+	}
+
+	
+
+    public override void OnVoicePlayed(IClient cl){
+        cl.Voice.WantsStereo = false;
+
+        base.OnVoicePlayed(cl);
+    }
+
+    [ClientRpc]
+	public override void OnKilledMessage( long leftid, string left, long rightid, string right, string method )
+	{
+        Killfeed.current?.AddEntry(leftid, left, rightid, right, method);
 	}
 }

@@ -1,0 +1,7 @@
+@import "/UI/InGameUI/Chat/Chat.razor.scss";
+
+rootpanel{
+    &.devcamera{
+        display: none;
+    }
+}

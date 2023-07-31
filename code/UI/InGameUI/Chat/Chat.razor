@@ -1,0 +1,12 @@
+@using Sandbox;
+@using Sandbox.UI;
+
+@inherits Sandbox.UI.Panel;
+@attribute [StyleSheet("Chat.razor.scss")]
+
+@namespace SlapArena.UI
+
+<root>
+    <div class="canvas" @ref=Canvas />
+    <TextEntry @ref=Input onsubmit=@Submit onblur=@Close />
+</root>
