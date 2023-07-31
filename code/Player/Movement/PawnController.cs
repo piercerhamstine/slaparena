@@ -4,15 +4,14 @@ using System.Collections.Generic;
 
 namespace SlapArena;
 
-public class PawnController : EntityComponent<Pawn>
+public partial class PawnController : EntityComponent<Pawn>
 {
     public int GroundAngle => 45;
     public int StepSize => 24;
     public float Gravity => 800f;
     public float JumpSpeed => 400f;
 
-    public int MaxDashes => 200;
-    private int CurrentDashes {get; set;} = 0;
+
 
     bool Grounded => Entity.GroundEntity.IsValid();
 
@@ -45,6 +44,7 @@ public class PawnController : EntityComponent<Pawn>
             HandleJump();
         }
 
+        DashTick();
         if(Input.Pressed("run")){
             HandleDash();
         }
@@ -61,21 +61,6 @@ public class PawnController : EntityComponent<Pawn>
         }
 
         Entity.GroundEntity = groundEntity;
-    }
-
-    private void HandleDash(){
-        if(CurrentDashes < MaxDashes){
-            Entity.Velocity = ApplyDash(Entity.Velocity, "noclip");
-            CurrentDashes += 1;
-        }
-    }
-
-    private Vector3 ApplyDash(Vector3 velocity, string eventName){
-        AddEvent(eventName);
-
-        var dir = Entity.InputDirection.Normal;
-        dir = Entity.Transform.NormalToWorld(dir);
-        return Entity.Velocity + dir * 500f;
     }
 
     private void HandleJump(){
