@@ -1,0 +1,32 @@
+@using Sandbox;
+@using Sandbox.UI;
+@inherits PanelWorld;
+
+@namespace SlapArena.UI
+
+@attribute [StyleSheet("/UI/InWorldUI/InfoDisplay/InfoDisplay.scss")]
+
+<root>
+    @if(Entity is not Pawn plyr || !plyr.IsValid()){
+    return;
+}
+    <section class="header">
+        <span>Welcome to Slap Arena</span>
+    </section>
+
+    <section class="about">
+        <div>This is a WORK IN PROGRESS.</div>
+    </section>
+
+    <section class="instructions">
+        <p>The goal is to knock other players off the map.</p>
+        <p>Currently there is only one glove, the basic glove to use.</p>
+        <p>You can dash by pressing the "run" key, most likely shift.</p>
+    </section>
+</root>
+
+@code{
+    public SpawnMenu(Pawn plyr, Vector3 pos, Rotation rot) : base(plyr, pos, rot){
+
+    }
+}
