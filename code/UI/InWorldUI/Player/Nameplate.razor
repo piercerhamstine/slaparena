@@ -25,7 +25,9 @@
         }
 
         var plyr = Entity as Pawn;
-
-        Position = Entity.Position + panelOffset;
+        var x = plyr.CollisionBounds.Mins.x;
+        var y = plyr.CollisionBounds.Mins.y;
+        var p = new Vector3(Entity.Position.x+x/2, Entity.Position.y+y/2, Entity.Position.z);
+        Position = p + panelOffset;
     }
 }

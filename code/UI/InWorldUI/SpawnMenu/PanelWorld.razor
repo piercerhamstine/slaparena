@@ -1,0 +1,35 @@
+@using Sandbox;
+@using Sandbox.UI;
+@inherits WorldPanel
+
+@namespace SlapArena.UI
+
+<root></root>
+
+@code{
+    protected readonly Entity Entity;
+    protected Vector3 panelPosition;
+    protected Rotation panelRotation;
+    protected readonly bool followEntity;
+
+    public PanelWorld(Entity entity, Vector3 position, Rotation rotation, bool followEntity = false){
+            Entity = entity;
+            panelPosition = position;
+            panelRotation = rotation;
+            Rotation = panelRotation;
+            Position = panelPosition;
+            this.followEntity = followEntity;
+    }
+
+    public override void Tick(){
+        if(!Entity.IsValid() || Entity.LifeState == LifeState.Dead){
+            Delete(true);
+            return;
+        }
+
+        if(followEntity){
+            Position = Entity.Position;
+            return;    
+        }
+    }
+}
