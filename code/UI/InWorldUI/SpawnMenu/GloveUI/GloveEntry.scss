@@ -1,0 +1,14 @@
+GloveEntry{
+    width: 100px;
+    height: 100px;
+    font-size: 18px;
+    font-weight: 600;
+    background-color: rgb(40, 80, 150);
+    margin: 10px;
+    justify-content: center;
+    align-items: flex-end;
+    color: white;
+    &:hover{
+        background-color: black;
+    }
+}

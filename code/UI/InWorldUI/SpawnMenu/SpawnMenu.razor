@@ -4,7 +4,7 @@
 
 @namespace SlapArena.UI
 
-@attribute [StyleSheet("/UI/InWorldUI/InfoDisplay/InfoDisplay.scss")]
+@attribute [StyleSheet]
 
 <root>
     @if(Entity is not Pawn plyr || !plyr.IsValid()){
@@ -26,7 +26,8 @@
 </root>
 
 @code{
-    public SpawnMenu(Pawn plyr, Vector3 pos, Rotation rot) : base(plyr, pos, rot){
-
+    public SpawnMenu(Vector3 pos, Rotation rot) : base(pos, rot){
+        this.PanelBounds = new Rect(new Vector2(this.PanelBounds.Position.x, this.PanelBounds.Position.y), new Vector2(2000, 2000));
+        AddChild(new GloveGrid());
     }
 }

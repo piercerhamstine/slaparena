@@ -30,6 +30,8 @@ public partial class MyGame : GameManager
 
         if(Game.IsClient){
             _ = new InfoDisplay();
+
+            _ = new SpawnMenu(new Vector3(0, 570, 1900), Rotation.FromAxis(Vector3.Up, 270));
         }
 	}
 

@@ -24,14 +24,12 @@
 
 @code{
     public InfoDisplay(){
-        Position = new Vector3(0, 570, 1930);
+        Position = new Vector3(-80, 570, 2180);
         var rot = Rotation.FromAxis(Vector3.Up, 270);
         Rotation = rot;
         this.PanelBounds = new Rect(new Vector2(this.PanelBounds.Position.x, this.PanelBounds.Position.y), new Vector2(4000, 4000));
     }
 
     public override void Tick(){
-        Position = new Vector3(-80, 570, 2030);
-        this.PanelBounds = new Rect(new Vector2(this.PanelBounds.Position.x, this.PanelBounds.Position.y), new Vector2(4000, 4000));
     }
 }

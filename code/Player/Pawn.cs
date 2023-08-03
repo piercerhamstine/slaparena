@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using Sandbox.UI;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -7,6 +8,8 @@ namespace SlapArena;
 
 public partial class Pawn : AnimatedEntity
 {
+    WorldInput worldInput = new();
+
     [Net]
     public string SteamNickname {get; private set;}
 
@@ -197,6 +200,9 @@ public partial class Pawn : AnimatedEntity
         viewAngles.pitch = viewAngles.pitch.Clamp(-89f, 89f);
         viewAngles.roll = 0f;
 		ViewAngles = viewAngles.Normal;
+
+        worldInput.Ray = AimRay;
+        worldInput.MouseLeftPressed = Input.Down("attack1");
 	}
 
 	/// <summary>

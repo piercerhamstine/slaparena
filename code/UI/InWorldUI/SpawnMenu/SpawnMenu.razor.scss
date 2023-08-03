@@ -1,0 +1,19 @@
+SpawnMenu{
+	pointer-events: all;
+	width: 100%;
+	height: 100%;
+	background-color: #578bfa;
+	border: 4px rgb(0, 0, 0);
+	border-radius: 16px;
+	padding: 10px 5px 10px 5px;
+	cursor: pointer;
+
+    .header{
+        font-size: 150px;
+    }
+
+    .instructions{
+        flex-direction: column;
+        align-items: center;
+    }
+}
