@@ -3,6 +3,8 @@ using Sandbox;
 namespace SlapArena;
 
 public partial class CameraThirdPerson : EntityComponent<Pawn>{
+    
+    
     public void Simulate(){
         if(Entity is Pawn plyr){
             Camera.FirstPersonViewer = null;
