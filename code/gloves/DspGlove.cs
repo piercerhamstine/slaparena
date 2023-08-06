@@ -1,16 +1,20 @@
 using Sandbox;
 using System;
 using System.Collections.Generic;
-using System.Security.AccessControl;
-using System.Transactions;
+using System.Linq;
 
 namespace SlapArena;
 
-public partial class BaseGlove : Glove{
+public partial class DspGlove : Glove{
 	public override string ModelPath => "models/glove_r.vmdl";
-	public override string GloveName => "Basic";
-	
-    protected virtual void AttackEffect(){
+	public override string GloveName => "DSP";
+	public override void Spawn()
+	{
+		base.Spawn();
+		SetMaterialGroup(1);
+	}
+
+	protected virtual void AttackEffect(){
         Pawn.SetAnimParameter("holdtype_attack", (int)CitizenAnimationHelper.Hand.Right);
         Pawn.SetAnimParameter("b_attack", true);
     }
@@ -25,7 +29,7 @@ public partial class BaseGlove : Glove{
         var forward = ray.Forward;
         forward = forward.Normal;
 
-		var test = Owner.Rotation.Forward.Normal;
+
 
         // I am sure there is a much cleaner way of doing this
         // But it works for now.
@@ -36,18 +40,20 @@ public partial class BaseGlove : Glove{
                         .Run();
 
         var hits = Melee(pos, camTrace.EndPosition);
-        foreach(var h in hits){
+
+		foreach(var h in hits){
             if(h.Entity != null){
                 var plyr = h.Entity as Pawn;
                 if(!plyr.IsInvincible){
-                	PlaySound("rust_pistol.shoot");
-                    using (Prediction.Off()){
+					Particles.Create( "particles/dsp.vpcf", this, "effects");
+					PlaySound("sounds/dsp_1.sound");
+					using (Prediction.Off()){
+
                         var dmgInfo = new DamageInfo();
                         dmgInfo.Attacker = Owner;
                         dmgInfo.WithWeapon(this);
-
                         plyr.lastDamage = dmgInfo;
-                        plyr.KnockBack(test);
+                        plyr.KnockBack(forward);
                     }
                 }
             }

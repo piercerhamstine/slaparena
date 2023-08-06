@@ -26,13 +26,13 @@
     "PerMapRanking": false,
     "LeaderboardType": "None",
     "ProjectTemplate": null,
-    "CsProjName": "",
+    "CsProjName": "Slap Arena",
     "LaunchConfigs": [
       {
         "Name": "My New Config",
         "GameIdent": "wombatworks.slap_arena#local",
         "MapName": "wombatworks.dev_arena",
-        "MaxPlayers": 10,
+        "MaxPlayers": 64,
         "GameSettings": {},
         "Addons": "",
         "PreLaunchCommand": "",
@@ -254,6 +254,13 @@
           "GroupName": "Other"
         }
       ]
+    },
+    "Compiler": {
+      "RootNamespace": "Sandbox",
+      "DefineConstants": "SANDBOX;ADDON;DEBUG",
+      "NoWarn": "1701;1702;1591;",
+      "References": [],
+      "DistinctReferences": []
     }
   }
 }

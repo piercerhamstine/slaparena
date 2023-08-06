@@ -7,8 +7,12 @@ public partial class Glove : ModelEntity
 {
     public Pawn Pawn => Owner as Pawn;
 
+	public virtual string GloveName => null;
     public virtual string ModelPath => null;
-
+    
+	// Need to figure out how to swap materials at runtime.
+	// public virtual string MaterialPath => null;
+    
     /// <summary>
     /// How often the glove can attack
     /// </summary>
@@ -32,11 +36,12 @@ public partial class Glove : ModelEntity
     public void OnEquip(Pawn pawn){
         Owner = pawn;
         SetParent(pawn, true);
-        //EnableDrawing = true;
+        EnableDrawing = true;
     }
 
     public void OnHolster(){
         EnableDrawing = false;
+		SetParent(null);
     }
 
 	public override void Simulate( IClient cl )
@@ -68,6 +73,5 @@ public partial class Glove : ModelEntity
     public virtual void PrimaryAttack(){}
 
     protected virtual void Animate(){
-        
     }
 }

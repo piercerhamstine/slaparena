@@ -1,0 +1,13 @@
+{
+  "UI": false,
+  "Volume": "1.00,1.00,0",
+  "Pitch": "1.00,1.00,0",
+  "Decibels": 160,
+  "SelectionMode": "Random",
+  "Sounds": [
+    "sounds/dsp_1.vsnd",
+    "sounds/dsp_garbage.vsnd"
+  ],
+  "MaximumDistance": 5841.2856,
+  "MinimumDistance": 292.0643
+}

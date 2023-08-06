@@ -1,8 +1,10 @@
 @using Sandbox;
 @using Sandbox.UI;
+@using SlapArena;
 
 @inherits Panel
 @attribute [StyleSheet]
+
 
 <root>
     <section class="header">
@@ -11,6 +13,7 @@
 
     <section class="userselection">
         <button onclick="@Game.Menu.HideMenu">Resume</button>
+		<button onclick="@MyGame.Reset">Reset</button>
         <button onclick="@Game.Menu.Close">Quit</button>
     </section>
 </root>

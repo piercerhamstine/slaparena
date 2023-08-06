@@ -3,6 +3,7 @@ using Sandbox.UI;
 using System;
 using System.ComponentModel;
 using System.Linq;
+using SlapArena.UI;
 
 namespace SlapArena;
 
@@ -15,13 +16,10 @@ public partial class Pawn : AnimatedEntity
 
     public DamageInfo lastDamage;
     private TimeSince timeSinceLastDmg;
-    private float timeToClearDmgInfo = 4.0f;
+    private float timeToClearDmgInfo = 5.0f;
 
 	[ClientInput] public Vector3 InputDirection { get; protected set; }
 	[ClientInput] public Angles ViewAngles { get; set; }
-
-    [Net, Predicted]
-    public Glove ActiveGlove {get; set;}
 
     [Net, Predicted]
     public bool IsInvincible {get; set;}
@@ -58,9 +56,9 @@ public partial class Pawn : AnimatedEntity
 
     [BindComponent] public PawnController Controller {get;}
     [BindComponent] public PawnAnimator Animator{get;}
-    [BindComponent] public PawnStuckController StuckController {get;}
     [BindComponent] public CameraThirdPerson ThirdPersonCam {get;}
-    
+ 	[BindComponent] public Inventory Inventory {get;}
+	
 	/// <summary>
 	/// Called when the entity is first created 
 	/// </summary>
@@ -71,8 +69,6 @@ public partial class Pawn : AnimatedEntity
 
         LifeState = LifeState.Alive;
         Health = 100;
-
-        SetActiveWeapon(new BaseGlove());
 
         CreateHull();
         Tags.Add("player");
@@ -95,11 +91,6 @@ public partial class Pawn : AnimatedEntity
 	{
         _ = new UI.Nameplate(this, new Vector3(-8,0,65));
 	}
-
-    public void SetActiveWeapon(Glove glove){
-        ActiveGlove = glove;
-        ActiveGlove.OnEquip(this);
-    }
 
 	public override void OnKilled()
 	{
@@ -134,15 +125,19 @@ public partial class Pawn : AnimatedEntity
 	}
 
     public void Respawn(){
+		Game.AssertServer();
+		
         LifeState = LifeState.Alive;
         Health = 100;
 
-        SetActiveWeapon(new BaseGlove());
-
         Components.Create<PawnController>();
         Components.Create<PawnAnimator>();
-        Components.Create<PawnStuckController>();
         Components.Create<CameraThirdPerson>();
+		Components.Create<Inventory>();
+
+		Inventory.Clean();
+		Inventory.Add(new BaseGlove(), true);
+		Inventory.Add(new DspGlove());
 
         CreateHull();
         Tags.Add("player");
@@ -182,6 +177,20 @@ public partial class Pawn : AnimatedEntity
         EnableHitboxes = true;
     }
 
+	[ConVar.ClientData( "glove_current" )]
+	public static string playerCurrentGlove {get; set;} = "Basic";
+	public void HandleGloveSwap(){
+		var gloveName = Client.GetClientData<string>("glove_current");
+		if(Game.IsServer){
+			if(Inventory.ActiveGlove.GloveName != gloveName){
+				using (Prediction.Off()){
+					Inventory.ActiveGlove.OnHolster();
+					Inventory.SetActiveGlove(gloveName);
+				}
+			}
+		}
+	}
+
 	public override void BuildInput()
 	{
 		InputDirection = Input.AnalogMove;
@@ -203,6 +212,15 @@ public partial class Pawn : AnimatedEntity
 
         worldInput.Ray = AimRay;
         worldInput.MouseLeftPressed = Input.Down("attack1");
+
+        if(worldInput.Hovered is GloveEntry && Input.Down("attack1")){
+            if(Input.Pressed("attack1")){
+                var b = worldInput.Hovered as GloveEntry;
+				playerCurrentGlove = b.GloveName.Text;
+			}
+            Input.ClearActions();
+        }
+
 	}
 
 	/// <summary>
@@ -216,11 +234,13 @@ public partial class Pawn : AnimatedEntity
         UpdateDmgInfo();
 
         // Components
-        StuckController?.Simulate(cl);
+		Controller?.SetActiveOwner(this);
         Controller?.Simulate(cl);
         Animator?.Simulate();
-        ActiveGlove?.Simulate(cl);
+        Inventory?.Simulate(cl);
         ThirdPersonCam?.Simulate();
+		
+		HandleGloveSwap();
 	}
 
 	/// <summary>
@@ -228,6 +248,7 @@ public partial class Pawn : AnimatedEntity
 	/// </summary>
 	public override void FrameSimulate( IClient cl )
 	{
+		Controller?.SetActiveOwner(this);
         ThirdPersonCam?.Simulate();
 	}
 

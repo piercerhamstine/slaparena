@@ -7,19 +7,29 @@ public partial class PawnController{
     private int CurrentDashes {get; set;} = 2;
     private TimeSince timeSinceLastDash;
     private float dashCoolDownSec = 4.0f;
+	public float dashDuration = .1f;
+	public TimeSince timeSinceDashed;
+	public bool isDashing;
 
     private void HandleDash(){
         if(CurrentDashes > 0){
+			isDashing = true;
+			Log.Info(isDashing);
+			timeSinceDashed = 0;
+			Entity.Velocity = 0;
             Entity.Velocity = ApplyDash(Entity.Velocity, "noclip");
             CurrentDashes -= 1;
         }
     }
 
     private void DashTick(){
-        if(Game.IsClient){return;}
-        
-        if(CurrentDashes >= MaxDashes){timeSinceLastDash = 0; return;}
+		if(isDashing && timeSinceDashed > dashDuration){
+			isDashing = false;
+		}
 
+        if(Game.IsClient){return;}
+
+        if(CurrentDashes >= MaxDashes){timeSinceLastDash = 0; return;}
         if(timeSinceLastDash >= dashCoolDownSec){
             CurrentDashes += 1;
             timeSinceLastDash = 0;
@@ -32,6 +42,6 @@ public partial class PawnController{
 
         var dir = Entity.InputDirection.Normal;
         dir = Entity.Transform.NormalToWorld(dir);
-        return Entity.Velocity + dir * 500f;
+        return Entity.Velocity + dir * 700f;
     }
 }

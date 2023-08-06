@@ -7,8 +7,11 @@ SpawnMenu{
 	border-radius: 16px;
 	padding: 10px 5px 10px 5px;
 	cursor: pointer;
-
+    flex-direction: column;
+    align-items: center;
+    
     .header{
+        color: white;
         font-size: 150px;
     }
 

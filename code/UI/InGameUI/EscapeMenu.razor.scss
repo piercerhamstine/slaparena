@@ -1,12 +1,11 @@
 EscapeMenu{
     width: 100%;
     height: 100%;
-    background-color: #578bfa;
+    background-color: rgba(#578bfa, 0.5);
     font-family:  'Lucida Grande', 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     flex-direction: column;
 
     .header{
-        background-color: #578bfa;
         justify-content: center;
         align-items: center;
         font-size: 100px;

@@ -3,33 +3,55 @@ using System;
 
 namespace SlapArena;
 
-public partial class PawnStuckController : EntityComponent<Pawn>{
+public class PawnStuckController{
+	public PawnController Controller;
 
-    internal Vector3 pawnLastPos;
+	private int _stuckTries = 0;
 
-    public void Simulate(IClient cl){
-        if(Game.IsServer){
-            TryUnstuck();
-        }
-    }
+	public PawnStuckController( PawnController controller )
+	{
+		Controller = controller;
+	}
 
-    public void TryUnstuck(){
+	public virtual bool TestAndFix()
+	{
+		var result = Controller.Entity.TraceBBox( Controller.player.Position, Controller.player.Position );
 
-        var result = Entity.TraceBBox(Entity.Position, Entity.Position);
+		// Not stuck, we cool
+		if ( !result.StartedSolid )
+		{
+			_stuckTries = 0;
+			return false;
+		}
 
-        if(!result.StartedSolid){
-            pawnLastPos = Entity.Position;
-            return;
-        }
+		//
+		// Client can't jiggle its way out, needs to wait for
+		// server correction to come
+		//
+		if ( Game.IsClient )
+			return true;
 
-        if(result.StartedSolid){
-            if(pawnLastPos != Entity.Position){
-                return;
-            }
+		var AttemptsPerTick = 20;
 
-            var pos = Entity.Position + Vector3.Up * 5;
+		for ( var i = 0; i < AttemptsPerTick; i++ )
+		{
+			var pos = Controller.player.Position + Vector3.Random.Normal * (((float)_stuckTries) / 2.0f);
 
-            Entity.Position = pos;
-        }
-    }
+			// First try the up direction for moving platforms
+			if ( i == 0 )
+				pos = Controller.player.Position + Vector3.Up * 5;
+
+			result = Controller.Entity.TraceBBox( pos, pos );
+
+			if ( !result.StartedSolid )
+			{
+				Controller.player.Position = pos;
+				return false;
+			}
+		}
+
+		_stuckTries++;
+
+		return true;
+	}
 }

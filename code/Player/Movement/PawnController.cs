@@ -10,12 +10,20 @@ public partial class PawnController : EntityComponent<Pawn>
     public int StepSize => 24;
     public float Gravity => 800f;
     public float JumpSpeed => 400f;
-
-
-
     bool Grounded => Entity.GroundEntity.IsValid();
 
     HashSet<string> ControllerEvents = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+	public Pawn player;
+	public PawnStuckController Unstuck;
+
+	public PawnController(){
+		Unstuck = new PawnStuckController(this);
+	}
+
+	public void SetActiveOwner(Pawn owner){
+		player = owner;
+	}
 
     public void Simulate(IClient cl){
         ControllerEvents.Clear();
@@ -26,13 +34,19 @@ public partial class PawnController : EntityComponent<Pawn>
         var moveVec = Rotation.From(angles) * movement * 320f;
         var groundEntity = CheckGrounded();
 
-        if(groundEntity.IsValid()){
+		if(Unstuck.TestAndFix()){
+			return;
+		}
+
+		if(isDashing){
+		}
+        else if(groundEntity.IsValid()){
             if(!Grounded){
                 Entity.Velocity = Entity.Velocity.WithZ(0);
                 AddEvent("grounded");
             }
 
-            Entity.Velocity = Accelerate(Entity.Velocity, moveVec.Normal, moveVec.Length, 200.0f, 7.5f);            
+            Entity.Velocity = Accelerate(Entity.Velocity, moveVec.Normal, moveVec.Length, 200.0f, 7.5f);        
             Entity.Velocity = ApplyFriction(Entity.Velocity, 4.0f);
         }
         else{
