@@ -30,9 +30,10 @@ public partial class MyGame : GameManager
 
         if(Game.IsClient){
             _ = new InfoDisplay();
+			_ = new SpawnMenu(new Vector3(0, 570, 1900), Rotation.FromAxis(Vector3.Up, 270));
 
-            _ = new SpawnMenu(new Vector3(0, 570, 1900), Rotation.FromAxis(Vector3.Up, 270));
         }
+
 	}
 
 	/// <summary>
@@ -47,7 +48,7 @@ public partial class MyGame : GameManager
 		client.Pawn = pawn;
         pawn.Respawn();
         pawn.DressFromClient(client);
-
+		
 		// Get all of the spawnpoints
 		var spawnpoints = Entity.All.OfType<SpawnPoint>();
 
@@ -72,8 +73,6 @@ public partial class MyGame : GameManager
 
         base.Simulate(cl);
 	}
-
-	
 
     public override void OnVoicePlayed(IClient cl){
         cl.Voice.WantsStereo = false;

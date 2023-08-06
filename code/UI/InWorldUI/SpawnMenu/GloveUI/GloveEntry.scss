@@ -1,14 +1,19 @@
 GloveEntry{
-    width: 100px;
-    height: 100px;
+    width: 200px;
+    height: 200px;
     font-size: 18px;
     font-weight: 600;
-    background-color: rgb(40, 80, 150);
+    background-color: #3b61b3;
     margin: 10px;
     justify-content: center;
     align-items: flex-end;
+    border-radius: 15px;
     color: white;
+    transition: all .1s ease-in;
+
     &:hover{
-        background-color: black;
+        transition: all .1s ease-in;
+        transform: scale(1.2);
+        background-color: #2f4f94;
     }
 }
